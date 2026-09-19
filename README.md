@@ -8,7 +8,7 @@
 ---
 
 ## 🚀 Live Access
-* **Frontend App:** [https://your-frontend-url.vercel.app](https://your-frontend-url.vercel.app)
+* **Frontend App:** [civicai-swart.vercel.app](https://civicai-swart.vercel.app)
 * **Backend API Documentation / Health:** [https://civicai-backend.onrender.com](https://civicai-backend.onrender.com)
 
 ---

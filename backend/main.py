@@ -72,15 +72,20 @@ def analyze_issue():
         print(f"Error during analysis: {e}")
         return jsonify({"error": "Failed to analyze image with AI", "details": str(e)}), 500
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
-@app.route('/api/generate-action-plan', methods=['POST'])
+@app.route('/api/generate-action-plan', methods=['POST', 'OPTIONS'])
+@app.route('/api/generate-action-plan/', methods=['POST', 'OPTIONS'])
 def generate_action_plan():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
+    if not client:
+        return jsonify({"error": "Gemini API key is not configured on the server"}), 500
+
     try:
-        data = request.json
-        issue_title = data.get('title', '')
-        description = data.get('description', '')
-        department = data.get('department', '')
+        data = request.json or {}
+        issue_title = data.get('title', 'Civic Issue')
+        description = data.get('description', 'Maintenance required')
+        department = data.get('department', 'Public Works')
 
         prompt = f"""
         You are an expert municipal Operations Director.
@@ -99,4 +104,8 @@ def generate_action_plan():
 
         return jsonify({'action_plan': response.text.strip()})
     except Exception as e:
+        print(f"Error generating action plan: {e}")
         return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)

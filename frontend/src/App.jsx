@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import L from 'leaflet';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet Default Icon Anchors for Webpack / Vite
@@ -13,6 +13,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// Sub-Component: Interactive Geospatial Incident Map
 // Sub-Component: Interactive Geospatial Incident Map
 function IncidentMap({ incidents }) {
   const defaultCenter = [28.6139, 77.2090];
@@ -26,6 +27,7 @@ function IncidentMap({ incidents }) {
           id="heatmapToggle" 
           checked={showHeatmap} 
           onChange={(e) => setShowHeatmap(e.target.checked)} 
+          style={{ cursor: 'pointer' }}
         />
         <label htmlFor="heatmapToggle" style={{ cursor: 'pointer' }}>🔥 Density / Heatmap Mode</label>
       </div>
@@ -35,22 +37,55 @@ function IncidentMap({ incidents }) {
           url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           attribution='&copy; OpenStreetMap'
         />
-        {incidents.map((incident) => {
-          const position = incident.coords || [28.6139, 77.2090];
-          return (
-            <Marker key={incident.id} position={position}>
-              <Popup>
-                <div style={{ padding: '4px' }}>
-                  <strong>{incident.id}</strong><br />
-                  <span>{incident.issue || incident.complaint}</span><br />
-                  <span style={{ color: (incident.severity === 'Critical' || incident.severity === 'High') ? '#dc2626' : '#d97706', fontWeight: 'bold' }}>
-                    {incident.severity} Priority
-                  </span>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+
+        {showHeatmap ? (
+          /* Render Heatmap Circles when showHeatmap is checked */
+          incidents.map((incident) => {
+            const position = incident.coords || [28.6139, 77.2090];
+            const isCritical = incident.severity === 'Critical' || incident.severity === 'High';
+            return (
+              <React.Fragment key={`heat-${incident.id}`}>
+                {/* Outer heat aura */}
+                <Circle
+                  center={position}
+                  radius={isCritical ? 1500 : 800}
+                  pathOptions={{ color: 'transparent', fillColor: isCritical ? '#ef4444' : '#f59e0b', fillOpacity: 0.35 }}
+                />
+                {/* Inner intense heat core */}
+                <Circle
+                  center={position}
+                  radius={isCritical ? 600 : 300}
+                  pathOptions={{ color: 'transparent', fillColor: isCritical ? '#dc2626' : '#d97706', fillOpacity: 0.7 }}
+                >
+                  <Popup>
+                    <div style={{ padding: '4px' }}>
+                      <strong style={{ color: '#dc2626' }}>🔥 High Incident Density Area</strong><br />
+                      <span>{incident.issue || incident.complaint}</span>
+                    </div>
+                  </Popup>
+                </Circle>
+              </React.Fragment>
+            );
+          })
+        ) : (
+          /* Render Normal Pins when unchecked */
+          incidents.map((incident) => {
+            const position = incident.coords || [28.6139, 77.2090];
+            return (
+              <Marker key={incident.id} position={position}>
+                <Popup>
+                  <div style={{ padding: '4px' }}>
+                    <strong>{incident.id}</strong><br />
+                    <span>{incident.issue || incident.complaint}</span><br />
+                    <span style={{ color: (incident.severity === 'Critical' || incident.severity === 'High') ? '#dc2626' : '#d97706', fontWeight: 'bold' }}>
+                      {incident.severity} Priority
+                    </span>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })
+        )}
       </MapContainer>
     </div>
   );
@@ -118,6 +153,7 @@ export default function App() {
   const handleGenerateAIPlan = async (incident) => {
     setLoadingPlanId(incident.id);
     
+    // Dynamic URL for Codespaces vs Localhost
     const backendUrl = window.location.hostname.includes('app.github.dev')
       ? `https://${window.location.hostname.replace('-5173', '-8000')}/api/generate-action-plan`
       : 'http://localhost:8000/api/generate-action-plan';
@@ -140,7 +176,7 @@ export default function App() {
       }
     } catch (err) {
       console.error('Error generating AI plan:', err);
-      alert('Failed to connect to backend for action plan generation. Ensure Flask backend is running.');
+      alert('Failed to connect to backend for action plan generation.');
     } finally {
       setLoadingPlanId(null);
     }

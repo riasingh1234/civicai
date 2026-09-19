@@ -1,393 +1,270 @@
-import { useState } from "react"
+import React, { useState } from 'react';
 
-function App() {
-  const [page, setPage] = useState("home")
-  const [analyzed, setAnalyzed] = useState(false)
-  const [reports, setReports] = useState([])
+export default function App() {
+  const [page, setPage] = useState('home');
+  const [reports, setReports] = useState([]);
+  
+  // Form and API states
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  
+  // Analysis states
+  const [loading, setLoading] = useState(false);
+  const [analyzed, setAnalyzed] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
 
-  const [location, setLocation] = useState("")
-  const [description, setDescription] = useState("")
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      // Reset previous analysis if new photo selected
+      setAnalyzed(false);
+      setAnalysisResult(null);
+    }
+  };
 
-  const analyzeIssue = () => {
-    setAnalyzed(true)
-  }
-
-  const submitReport = () => {
-    const newReport = {
-      id: "CIV-" + Math.floor(1000 + Math.random() * 9000),
-      issue: "Pothole Detected",
-      category: "Road Infrastructure",
-      severity: "High",
-      confidence: "94%",
-      department: "Road Maintenance",
-      location: location || "Location not provided",
-      description:
-        description ||
-        "Large pothole detected on the reported road.",
-      status: "Submitted",
-      date: new Date().toLocaleDateString()
+  // Call real Flask backend endpoint
+  const handleAnalyze = async () => {
+    if (!selectedFile) {
+      alert('Please select an issue image first.');
+      return;
     }
 
-    setReports([newReport, ...reports])
-    setPage("reports")
-    setAnalyzed(false)
-    setLocation("")
-    setDescription("")
-  }
-
-  if (page === "report") {
-    return (
-      <div>
-        <nav>
-          <h2>CivicAI</h2>
-
-          <div>
-            <a href="#" onClick={() => setPage("home")}>Home</a>
-            <a href="#">How It Works</a>
-            <a href="#" onClick={() => setPage("reports")}>
-              Reports
-            </a>
-          </div>
-        </nav>
-
-        <main className="report-page">
-          <section className="report-container">
-
-            <div className="report-header">
-              <p>REPORT A CIVIC ISSUE</p>
-
-              <h1>Tell us what's happening.</h1>
-
-              <span>
-                Upload a photo and provide some basic information.
-                CivicAI will analyze the issue and prepare your report.
-              </span>
-            </div>
-
-            <div className="upload-box">
-              <div className="upload-icon">+</div>
-
-              <h3>Upload Issue Photo</h3>
-
-              <p>
-                Choose a clear photo of the civic problem
-              </p>
-
-              <input type="file" accept="image/*" />
-            </div>
-
-            <div className="form-group">
-              <label>Location</label>
-
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Enter the location of the issue"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Description</label>
-
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe the issue in a few words..."
-                rows="5"
-              ></textarea>
-            </div>
-
-            <div className="action-buttons">
-
-              <button onClick={analyzeIssue}>
-                Analyze with AI →
-              </button>
-
-              <button
-                className="secondary-button"
-                onClick={() => setPage("home")}
-              >
-                Back
-              </button>
-
-            </div>
-
-            {analyzed && (
-              <div className="analysis-card">
-
-                <p className="analysis-label">
-                  AI ANALYSIS COMPLETE
-                </p>
-
-                <h2>Pothole Detected</h2>
-
-                <p className="analysis-description">
-                  CivicAI identified a road infrastructure issue
-                  from the uploaded image.
-                </p>
-
-                <div className="analysis-grid">
-
-                  <div>
-                    <span>Category</span>
-                    <strong>Road Infrastructure</strong>
-                  </div>
-
-                  <div>
-                    <span>Severity</span>
-                    <strong className="high">High</strong>
-                  </div>
-
-                  <div>
-                    <span>Confidence</span>
-                    <strong>94%</strong>
-                  </div>
-
-                  <div>
-                    <span>Department</span>
-                    <strong>Road Maintenance</strong>
-                  </div>
-
-                </div>
-
-                <div className="complaint-box">
-
-                  <h3>AI Generated Complaint</h3>
-
-                  <p>
-                    Large pothole detected on the reported road,
-                    potentially creating a safety hazard for vehicles
-                    and pedestrians.
-                  </p>
-
-                </div>
-
-                <button
-                  className="submit-button"
-                  onClick={submitReport}
-                >
-                  Submit Report
-                </button>
-
-              </div>
-            )}
-
-          </section>
-        </main>
-      </div>
-    )
-  }
-
-  if (page === "reports") {
-    return (
-      <div>
-        <nav>
-          <h2>CivicAI</h2>
-
-          <div>
-            <a href="#" onClick={() => setPage("home")}>Home</a>
-
-            <a href="#">How It Works</a>
-
-            <a href="#" onClick={() => setPage("reports")}>
-              Reports
-            </a>
-
-            <button onClick={() => setPage("report")}>
-              Report an Issue
-            </button>
-          </div>
-        </nav>
-
-        <main>
-
-          <section>
-            <p>CIVIC ISSUE DASHBOARD</p>
-
-            <h1>Reported Issues</h1>
-
-            <p>
-              Track civic problems reported through CivicAI.
-            </p>
-          </section>
-
-          {reports.length === 0 ? (
-
-            <div className="analysis-card">
-              <h2>No reports yet</h2>
-
-              <p className="analysis-description">
-                Civic issues submitted through the reporting
-                system will appear here.
-              </p>
-
-              <button onClick={() => setPage("report")}>
-                Create First Report →
-              </button>
-            </div>
-
-          ) : (
-
-            <div>
-
-              {reports.map((report) => (
-
-                <div className="analysis-card" key={report.id}>
-
-                  <p className="analysis-label">
-                    {report.id}
-                  </p>
-
-                  <h2>{report.issue}</h2>
-
-                  <p className="analysis-description">
-                    {report.description}
-                  </p>
-
-                  <div className="analysis-grid">
-
-                    <div>
-                      <span>Category</span>
-                      <strong>{report.category}</strong>
-                    </div>
-
-                    <div>
-                      <span>Severity</span>
-                      <strong className="high">
-                        {report.severity}
-                      </strong>
-                    </div>
-
-                    <div>
-                      <span>Location</span>
-                      <strong>{report.location}</strong>
-                    </div>
-
-                    <div>
-                      <span>Department</span>
-                      <strong>{report.department}</strong>
-                    </div>
-
-                    <div>
-                      <span>Status</span>
-                      <strong>{report.status}</strong>
-                    </div>
-
-                    <div>
-                      <span>Reported</span>
-                      <strong>{report.date}</strong>
-                    </div>
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          )}
-
-        </main>
-      </div>
-    )
-  }
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    formData.append('location', location);
+    formData.append('description', description);
+
+    try {
+      const backendUrl = window.location.hostname.includes('app.github.dev')
+  ? `https://${window.location.hostname.replace('-5173', '-8000')}/analyze`
+  : 'http://localhost:8000/analyze';
+
+const res = await fetch(backendUrl, {
+  method: 'POST',
+  body: formData,
+});
+
+      const data = await res.json();
+      if (res.ok) {
+        setAnalysisResult(data);
+        setAnalyzed(true);
+      } else {
+        alert(data.error || 'Failed to analyze image with AI.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error connecting to Flask backend. Make sure Flask is running on port 8000.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Save report to frontend state and navigate to Dashboard
+  const handleSubmitReport = () => {
+    if (!analysisResult) return;
+
+    const newReport = {
+      id: `CIV-${Math.floor(1000 + Math.random() * 9000)}`,
+      issue: analysisResult.issue,
+      category: analysisResult.category,
+      severity: analysisResult.severity,
+      confidence: analysisResult.confidence,
+      department: analysisResult.department,
+      complaint: analysisResult.complaint,
+      location: location || 'Location Not Specified',
+      description: description,
+      status: 'Submitted',
+      date: new Date().toLocaleDateString(),
+      imagePreview: previewUrl,
+    };
+
+    setReports([newReport, ...reports]);
+
+    // Reset Form
+    setAnalyzed(false);
+    setAnalysisResult(null);
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setLocation('');
+    setDescription('');
+    
+    // Switch to Dashboard
+    setPage('reports');
+  };
 
   return (
-    <div>
-
-      <nav>
-        <h2>CivicAI</h2>
-
-        <div>
-
-          <a href="#" onClick={() => setPage("home")}>
+    <div className="app-container">
+      {/* Navigation Header */}
+      <nav className="navbar">
+        <div className="logo" onClick={() => setPage('home')}>
+          <span>Civic</span>
+          <span className="badge">AI</span>
+        </div>
+        <div className="nav-links">
+          <button 
+            className={page === 'home' ? 'active' : ''} 
+            onClick={() => setPage('home')}
+          >
             Home
-          </a>
-
-          <a href="#">
-            How It Works
-          </a>
-
-          <a href="#" onClick={() => setPage("reports")}>
-            Reports
-          </a>
-
-          <button onClick={() => setPage("report")}>
-            Report an Issue
           </button>
-
+          <button 
+            className={page === 'report' ? 'active' : ''} 
+            onClick={() => setPage('report')}
+          >
+            Report Issue
+          </button>
+          <button 
+            className={page === 'reports' ? 'active' : ''} 
+            onClick={() => setPage('reports')}
+          >
+            Dashboard ({reports.length})
+          </button>
         </div>
       </nav>
 
-      <main>
+      {/* PAGE 1: HOME */}
+      {page === 'home' && (
+        <div className="hero-section">
+          <h1>AI-Powered Civic Issue Resolution</h1>
+          <p>Report municipal issues effortlessly. AI classifies, prioritizes, and routes complaints automatically.</p>
+          <div className="hero-buttons">
+            <button className="primary-btn" onClick={() => setPage('report')}>
+              Report an Issue
+            </button>
+            <button className="secondary-btn" onClick={() => setPage('reports')}>
+              View Reports
+            </button>
+          </div>
+          
+          <div className="feature-grid">
+            <div className="feature-card">
+              <h3>AI Detection</h3>
+              <p>Gemini Vision automatically extracts issues directly from photos.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Smart Priority</h3>
+              <p>Severity scoring tags urgent hazards for rapid municipal intervention.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Auto Routing</h3>
+              <p>Complaints are immediately dispatched to the correct municipal department.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
-        <section>
-
-          <p>AI-POWERED CIVIC REPORTING</p>
-
-          <h1>
-            Report problems.
-            <br />
-            Make your city better.
-          </h1>
-
-          <p>
-            CivicAI uses artificial intelligence to identify civic issues,
-            determine their priority, and route reports to the right department.
-          </p>
-
-          <button onClick={() => setPage("report")}>
-            Report an Issue →
-          </button>
-
-          <button
-            style={{
-              marginLeft: "12px",
-              background: "white",
-              color: "#176b5b",
-              border: "1px solid #176b5b"
-            }}
-            onClick={() => setPage("reports")}
-          >
-            View Reports
-          </button>
-
-        </section>
-
-        <section>
-
-          <div>
-            <h3>AI Issue Detection</h3>
-
-            <p>
-              Upload a photo and let AI analyze the problem.
-            </p>
+      {/* PAGE 2: REPORT AN ISSUE */}
+      {page === 'report' && (
+        <div className="report-container">
+          <h2>Report Civic Issue</h2>
+          
+          <div className="form-group">
+            <label>Upload Issue Photo *</label>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
+            {previewUrl && (
+              <div className="image-preview">
+                <img src={previewUrl} alt="Issue preview" style={{ maxWidth: '100%', maxHeight: '250px', marginTop: '10px', borderRadius: '8px' }} />
+              </div>
+            )}
           </div>
 
-          <div>
-            <h3>Smart Priority</h3>
-
-            <p>
-              Automatically identify the urgency of each issue.
-            </p>
+          <div className="form-group">
+            <label>Location Context</label>
+            <input 
+              type="text" 
+              placeholder="e.g. Sector 18, Main Street Near Metro Gate 2" 
+              value={location} 
+              onChange={(e) => setLocation(e.target.value)} 
+            />
           </div>
 
-          <div>
-            <h3>Department Routing</h3>
-
-            <p>
-              Send the report to the appropriate department.
-            </p>
+          <div className="form-group">
+            <label>Additional Details (Optional)</label>
+            <textarea 
+              placeholder="Provide any additional context..." 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
 
-        </section>
+          {!analyzed ? (
+            <button 
+              className="primary-btn" 
+              onClick={handleAnalyze} 
+              disabled={loading}
+            >
+              {loading ? 'Analyzing with Gemini AI...' : 'Analyze with AI'}
+            </button>
+          ) : (
+            <div className="analysis-card">
+              <h3>AI Analysis Result</h3>
+              <div className="analysis-grid">
+                <div><strong>Issue:</strong> {analysisResult.issue}</div>
+                <div><strong>Category:</strong> {analysisResult.category}</div>
+                <div><strong>Severity:</strong> <span className={`severity-${analysisResult.severity.toLowerCase()}`}>{analysisResult.severity}</span></div>
+                <div><strong>Confidence:</strong> {analysisResult.confidence}</div>
+                <div><strong>Department:</strong> {analysisResult.department}</div>
+              </div>
 
-      </main>
+              <div className="complaint-box">
+                <h4>AI-Generated Official Complaint</h4>
+                <p>{analysisResult.complaint}</p>
+              </div>
 
+              <button className="success-btn" onClick={handleSubmitReport}>
+                Submit Formal Report
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PAGE 3: REPORTS DASHBOARD */}
+      {page === 'reports' && (
+        <div className="dashboard-container">
+          <h2>Reported Issues Dashboard</h2>
+          {reports.length === 0 ? (
+            <p className="empty-state">No civic issues reported yet. Submit your first report above!</p>
+          ) : (
+            <div className="reports-grid">
+              {reports.map((item) => (
+                <div key={item.id} className="report-card">
+                  <div className="report-header">
+                    <span className="report-id">{item.id}</span>
+                    <span className="report-date">{item.date}</span>
+                  </div>
+                  {item.imagePreview && (
+                    <img src={item.imagePreview} alt="Reported issue" className="report-card-img" style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '6px' }} />
+                  )}
+                  <h3>{item.issue}</h3>
+                  <div className="report-meta">
+                    <p><strong>Category:</strong> {item.category}</p>
+                    <p><strong>Severity:</strong> {item.severity}</p>
+                    <p><strong>Department:</strong> {item.department}</p>
+                    <p><strong>Location:</strong> {item.location}</p>
+                  </div>
+                  <div className="report-complaint">
+                    <p>{item.complaint}</p>
+                  </div>
+                  <div className="report-footer">
+                    <span className="status-badge">{item.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
-  )
+  );
 }
-
-export default App

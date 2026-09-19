@@ -2,13 +2,13 @@
 # 🌍 CivicAI
 > Empowering communities through AI-driven municipal issue tracking and automated action planning.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://civicai-swart.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](civicai-git-main-ria22.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-Render-blue?style=for-the-badge&logo=render)](https://civicai-backend-nbys.onrender.com)
 
 ---
 
 ## 🚀 Live Access
-* **Frontend App:** [civicai-swart.vercel.app](https://civicai-swart.vercel.app)
+* **Frontend App:** [civicai-git-main-ria22.vercel.app](https://civicai-swart.vercel.app)
 * **Backend API Documentation / Health:** [https://civicai-backend.onrender.com](https://civicai-backend.onrender.com)
 
 ---

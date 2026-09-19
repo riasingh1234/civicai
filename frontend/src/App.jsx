@@ -1,6 +1,49 @@
 import React, { useState } from 'react';
+import L from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 export default function App() {
+  // IncidentMap Component
+function IncidentMap({ incidents }) {
+  // Default coordinates centered on city (New Delhi/NCR demo default)
+  const defaultCenter = [28.6139, 77.2090];
+
+  return (
+    <div style={{ height: '320px', width: '100%', marginBottom: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+      <MapContainer center={defaultCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
+        <TileLayer
+  url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+/>
+        {incidents.map((incident) => {
+          // Fallback coordinates if none exist
+          const position = incident.coords || [28.6139, 77.2090];
+          return (
+            <Marker key={incident.id} position={position}>
+              <Popup>
+                <strong>{incident.id}</strong><br />
+                {incident.title || incident.summary}<br />
+                <span style={{ color: incident.priority === 'Critical' ? 'red' : 'orange' }}>
+                  {incident.priority} Priority
+                </span>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  );
+}
   // Navigation & Role State
   const [role, setRole] = useState('citizen'); // 'citizen' or 'admin'
   const [page, setPage] = useState('home');
@@ -327,6 +370,7 @@ export default function App() {
           </div>
 
           {/* Department Filter Bar */}
+          <IncidentMap incidents={reports} />
           <div className="admin-filter-bar">
             <h3>Municipal Triage Dashboard</h3>
             <div className="filter-group">

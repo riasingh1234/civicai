@@ -74,3 +74,29 @@ def analyze_issue():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
+@app.route('/api/generate-action-plan', methods=['POST'])
+def generate_action_plan():
+    try:
+        data = request.json
+        issue_title = data.get('title', '')
+        description = data.get('description', '')
+        department = data.get('department', '')
+
+        prompt = f"""
+        You are an expert municipal Operations Director.
+        Generate a concise, 2-sentence official action plan for city workers to resolve this issue:
+        Issue: {issue_title}
+        Description: {description}
+        Department Assigned: {department}
+        
+        Format: Direct, professional, actionable instructions including estimated repair timeframe and required equipment/crew.
+        """
+
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+
+        return jsonify({'action_plan': response.text.strip()})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

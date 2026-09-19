@@ -2,4 +2,7 @@ flask
 flask-cors
 python-dotenv
 google-genai
+requests
+Pillow
+supabase
 gunicorn

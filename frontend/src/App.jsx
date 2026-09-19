@@ -154,9 +154,13 @@ export default function App() {
     setLoadingPlanId(incident.id);
     
     // Dynamic URL for Codespaces vs Localhost
-    const backendUrl = window.location.hostname.includes('app.github.dev')
-      ? `https://${window.location.hostname.replace('-5173', '-8000')}/api/generate-action-plan`
-      : 'http://localhost:8000/api/generate-action-plan';
+    const BASE_URL = 'https://civicai-backend-nbys.onrender.com';
+
+const backendUrl = window.location.hostname.includes('app.github.dev')
+  ? `https://${window.location.hostname.replace('-5173', '-8000')}/api/generate-action-plan`
+  : window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000/api/generate-action-plan'
+  : `${BASE_URL}/api/generate-action-plan`;
 
     try {
       const res = await fetch(backendUrl, {

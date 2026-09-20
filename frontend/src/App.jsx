@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from './lib/api';
 import { t, LANGS } from './lib/i18n';
 import ReportForm from './components/ReportForm';
-import MyReports, { rememberReport } from './components/MyReports';
 import OfficerDashboard from './components/AdminDashboard';
 import Analytics from './components/Analytics';
 import IncidentMap from './components/IncidentMap';

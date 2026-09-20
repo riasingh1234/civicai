@@ -6,7 +6,6 @@ const strings = {
   en: {
     tagline: 'Report a civic problem with a photo. We route it, rank it, and track it until it is fixed.',
     reportIssue: 'Report an issue',
-    myReports: 'My reports',
     commandCenter: 'Command centre',
     citizen: 'Citizen',
     official: 'City official',

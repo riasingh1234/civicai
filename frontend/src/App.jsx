@@ -63,7 +63,6 @@ export default function App() {
 
   const citizenPages = [
     ['report', t(lang, 'reportIssue')],
-    ['feed', t(lang, 'publicFeed')],
     ['mine', t(lang, 'myReports')],
   ];
 
@@ -146,9 +145,6 @@ export default function App() {
           <div className="hero-buttons">
             <button className="primary-btn" onClick={() => setPage('report')}>
               {t(lang, 'reportIssue')}
-            </button>
-            <button className="secondary-btn" onClick={() => setPage('feed')}>
-              {t(lang, 'publicFeed')}
             </button>
           </div>
 

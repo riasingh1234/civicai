@@ -64,7 +64,7 @@ export default function MyReports({ reports }) {
     };
   }, [mine]);
 
-  const rows = reports.filter((r) => mine.includes(r.id));
+  const rows = (reports || []).filter((r) => mine.includes(r.id));
   const unread = notifications.filter((n) => !n.read);
 
   async function clearUnread() {

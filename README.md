@@ -40,7 +40,7 @@ Municipalities process thousands of infrastructure complaints manually—ranging
 - 📸 **Visual Incident Analysis:** Multimodal analysis of physical damage directly from photos.
 - 📍 **Geospatial Pinning:** Automatic location contextualization and dynamic coordinate mapping.
 - 📄 **Automated Complaint Drafting:** AI creates formal, structured municipal complaints ready for official submission.
-- 🔔 **Live Ticket Tracking:** Public feed to track status and official municipal resolution notes.
+
 
 ### 🏛️ City Official Command Center
 - 📊 **Executive KPI Metrics:** High-level overview of total incidents, critical hazards, pending actions, and resolved cases.

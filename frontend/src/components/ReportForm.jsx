@@ -3,7 +3,7 @@ import { api } from '../lib/api';
 import { t } from '../lib/i18n';
 import DuplicateNotice from './DuplicateNotice';
 import LocationPicker from './LocationPicker';
-import PriorityBadge from './PriorityBadge';
+import PriorityBadge from './PriorityMeter';
 
 // Citizens land here from the home page. Flow is: evidence -> AI reads it ->
 // we show what we found plus anything that looks like a repeat -> they confirm.
